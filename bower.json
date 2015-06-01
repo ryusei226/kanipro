@@ -1,0 +1,20 @@
+{
+  "name": "kanipro",
+  "version": "0.0.0",
+  "homepage": "https://github.com/UTF-9/kanipro",
+  "description": "node.js for Arduino RC",
+  "authors": [
+    "UTF-9"
+  ],
+  "license": "MIT",
+  "ignore": [
+    "**/.*",
+    "node_modules",
+    "bower_components",
+    "test",
+    "tests"
+  ],
+  "dependencies": {
+    "fontawesome": "~4.3.0"
+  }
+}
