@@ -1,3 +1,4 @@
+socket = io.connect(location.origin);
 jQuery(document).ready(function () {
     var X = Math.floor(($(window).width() - $("#button").width()) / 2);
     var Y = Math.floor(($(window).height() - $("#button").height()) / 2);
@@ -15,6 +16,8 @@ jQuery(document).ready(function () {
 
     function TouchMove(event) {
         var pos = Position(event);
+        var posx = X - (pos.x - 30);
+        var posy = Y - (pos.y - 30);
         if (pos.x < X) {
             if (pos.y > Y) {
                 $("#event").html('左下');
@@ -28,8 +31,14 @@ jQuery(document).ready(function () {
                 $("#event").html('右上');
             }
         }
-        $("#leave").html('移動距離 X= ' + (X - (pos.x - 30)) + ' , Y= ' + (Y - (pos.y - 30)));
+        $("#leave").html('移動距離 X= ' + posx + ' , Y= ' + posy);
         $("#button").css({left: pos.x - 30, top: pos.y - 30});
+        if (socket) {
+            socket.emit("move", {
+                angleX: posx,
+                angleY: posy
+            });
+        }
     }
 
     function TouchLeave(event) {
