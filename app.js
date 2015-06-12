@@ -1,26 +1,33 @@
-var express = require('express');
-var path = require('path');
-var favicon = require('serve-favicon');
-var logger = require('morgan');
-var cookieParser = require('cookie-parser');
-var bodyParser = require('body-parser');
+var server = require("./server.js");
+server.init();
 
-var routes = require('./routes/index');
+/*
+ johnny-five [ Arduino Setting ]
+ */
+var five = require("johnny-five");
+var board = new five.Board();
+var servo;
 
-var app = express();
+board.on("ready", function() {
+    // デジタル10番ピンを設定
+    servo = new five.Servo(10);
+});
 
-// view engine setup
-app.set('views', path.join(__dirname, 'views'));
-app.set('view engine', 'ejs');
+/*
+ Socket.IO
+ */
+// サーバーへのアクセスを監視。アクセスがあったらコールバックが実行
+server.io.sockets.on("connection", function (s) {
+    var socket = s;
 
-// uncomment after placing your favicon in /public
-//app.use(favicon(__dirname + '/public/favicon.ico'));
-app.use(logger('dev'));
-app.use(bodyParser.json());
-app.use(bodyParser.urlencoded({extended: false}));
-app.use(cookieParser());
-app.use(express.static(path.join(__dirname, 'public')));
+    // クライアントからのデータの受信
+    socket.on("servo", function(dataFromClient) {
+        // サーボモーターを目的の角度まで回転
+        console.log(dataFromClient.angleX);
+        if(servo) servo.to(Number(dataFromClient.angleX/2));
+    });
+    socket.on("servo_reset", function() {
+        if (servo) servo.center();
+    });
 
-app.use('/', routes);
-
-module.exports = app;
+});

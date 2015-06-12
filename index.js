@@ -1,4 +1,4 @@
-socket = io.connect(location.origin);
+var socket = io.connect(location.origin);
 jQuery(document).ready(function () {
     var X = Math.floor(($(window).width() - $("#button").width()) / 2);
     var Y = Math.floor(($(window).height() - $("#button").height()) / 2);
@@ -12,6 +12,9 @@ jQuery(document).ready(function () {
     function TouchStart(event) {
         event.preventDefault();
         $("#event").html('タップしました');
+        if (socket) {
+            socket.emit("servo_reset");
+        }
     }
 
     function TouchMove(event) {
@@ -34,10 +37,10 @@ jQuery(document).ready(function () {
         $("#leave").html('移動距離 X= ' + posx + ' , Y= ' + posy);
         $("#button").css({left: pos.x - 30, top: pos.y - 30});
         if (socket) {
-            socket.emit("move", {
-                angleX: posx,
-                angleY: posy
+            socket.emit("servo", {
+                angleX : posx*(-1),
             });
+            socket
         }
     }
 
@@ -45,6 +48,10 @@ jQuery(document).ready(function () {
         $("#event").html('指を離しました');
         $("#button").css({left: X, top: Y});
         $("#leave").html('移動距離 X= 0 , Y= 0');
+        if (socket) {
+            socket.emit("servo_reset");
+            socket.emit("dc_reset");
+        }
     }
 
     function Position(e) {
